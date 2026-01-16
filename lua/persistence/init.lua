@@ -7,6 +7,12 @@ M._active = false
 
 local e = vim.fn.fnameescape
 
+---@param file_path string
+---@return boolean
+local file_exists = function(file_path)
+  return uv.fs_stat(file_path) and true or false
+end
+
 ---@param opts? {branch?: boolean}
 function M.current(opts)
   opts = opts or {}
@@ -116,7 +122,7 @@ function M.handle_selected(opts)
       if jit.os:find("Windows") then
         dir = dir:gsub("^(%w)/", "%1:/")
       end
-      if not have[dir] then
+      if (not have[dir]) and file_exists(dir) then
         have[dir] = true
         items[#items + 1] = { session = session, dir = dir, branch = branch }
       end
